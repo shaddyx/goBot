@@ -5,8 +5,9 @@ import "regexp"
 type RouterHandlerFunc func(msg IncomingChatMessage) *OutgoingChatMessage
 
 type Router struct {
-	handlers      map[string]RouterHandlerFunc
-	regexHandlers map[string]RouterHandlerFunc
+	handlers       map[string]RouterHandlerFunc
+	regexHandlers  map[string]RouterHandlerFunc
+	defaultHandler RouterHandlerFunc
 }
 
 func NewRouter() Router {
@@ -30,6 +31,13 @@ func (r *Router) AddRegexHandler(cmd string, f RouterHandlerFunc) {
 	r.regexHandlers[cmd] = f
 }
 
+func (r *Router) SetDefaultHandler(f RouterHandlerFunc) {
+	if r.defaultHandler != nil {
+		panic("Default handler already exists")
+	}
+	r.defaultHandler = f
+}
+
 func (r *Router) CallHandler(msg IncomingChatMessage) *OutgoingChatMessage {
 	if r.handlers[msg.Text] != nil {
 		return r.handlers[msg.Text](msg)
@@ -37,11 +45,13 @@ func (r *Router) CallHandler(msg IncomingChatMessage) *OutgoingChatMessage {
 		for key, handler := range r.regexHandlers {
 			match, _ := regexp.MatchString(key, msg.Text)
 			if match {
-				handler(msg)
+				return handler(msg)
 			}
 		}
 	}
-
+	if r.defaultHandler != nil {
+		return r.defaultHandler(msg)
+	}
 	return nil
 }
 
