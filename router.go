@@ -1,6 +1,9 @@
 package gobot
 
-import "regexp"
+import (
+	"log"
+	"regexp"
+)
 
 type RouterHandlerFunc func(msg IncomingChatMessage) *OutgoingChatMessage
 
@@ -73,7 +76,9 @@ func (r Router) RmRegexHandler(cmd string) {
 func (r Router) ListenUpdates(bot BotInterface) {
 	for msg := range bot.GetUpdates() {
 		res := r.CallHandler(msg)
+		log.Printf("Received answer from handler: %v", res)
 		if res != nil {
+			log.Printf("Sending answer from handler: %v", res)
 			bot.Send(*res)
 		}
 	}
