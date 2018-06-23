@@ -15,7 +15,6 @@ type TelegramBot struct {
 }
 
 func (b TelegramBot) Connect() error {
-	b.updates = make(chan IncomingChatMessage, 1000)
 	log.Println(b.Token)
 	log.Println("Initializing native telegram bot api")
 	bot, err := tgbotapi.NewBotAPI(b.Token)
