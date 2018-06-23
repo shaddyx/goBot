@@ -79,7 +79,11 @@ func (r Router) ListenUpdates(bot BotInterface) {
 		log.Printf("Received answer from handler: %v", res)
 		if res != nil {
 			log.Printf("Sending answer from handler: %v", res)
-			bot.Send(*res)
+			err := bot.Send(*res)
+			if err != nil {
+				log.Print("Error sending answer from handler: %v", err)
+				return
+			}
 		}
 	}
 }
