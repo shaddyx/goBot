@@ -1,7 +1,5 @@
 package gobot
 
-import "reflect"
-
 type AbstractBot struct {
 	Token string
 	BotInterface
@@ -14,10 +12,6 @@ type BotInterface interface {
 	SendAnswer(message OutgoingChatMessage, incomingMessage *IncomingChatMessage) error
 	Disconnect() error
 	GetUpdates() chan IncomingChatMessage
-}
-
-func (b AbstractBot) String() string {
-	return reflect.TypeOf(b).Name() + "[token=" + b.Token + "]"
 }
 
 func (b AbstractBot) Disconnect() error {

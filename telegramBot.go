@@ -14,31 +14,27 @@ type TelegramBot struct {
 	nativeBot *tgbotapi.BotAPI
 }
 
-func NewTelegramBot() TelegramBot {
+func NewTelegramBot(token string) (TelegramBot, error) {
 	tbot := TelegramBot{}
 	tbot.updates = make(chan IncomingChatMessage, 1000)
-	return tbot
-}
-
-func (b TelegramBot) Connect() error {
-	log.Println(b.Token)
+	log.Println("Token is:" + token)
 	log.Println("Initializing native telegram bot api")
-	bot, err := tgbotapi.NewBotAPI(b.Token)
+	bot, err := tgbotapi.NewBotAPI(token)
 	if err != nil {
-		return errors.Wrap(err, "Error initializing native telegram bot")
+		return TelegramBot{}, errors.Wrap(err, "Error initializing native telegram bot")
 	}
-	b.nativeBot = bot
+	tbot.nativeBot = bot
 	log.Println("Api initialized")
 
 	go (func() {
 		log.Println("starting processUpdates")
-		updatesErr := b.processUpdates()
+		updatesErr := tbot.processUpdates()
 		if updatesErr != nil {
 			log.Fatal(errors.Wrap(err, "Error listening updates"))
 		}
 	})()
 
-	return nil
+	return tbot, nil
 }
 
 func (b TelegramBot) getTelegramId(message OutgoingChatMessage) (int64, error) {
