@@ -115,9 +115,10 @@ func (b TelegramBot) processUpdates() error {
 	for update := range updates {
 		log.Println("Update incoming:" + fmt.Sprintf("%v", update))
 		if update.Message == nil {
+			log.Println("Message is nil")
 			continue
 		}
-		log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
+		log.Printf("Processing update [%s] %s", update.Message.From.UserName, update.Message.Text)
 		inMsgId := strconv.Itoa(update.Message.MessageID)
 		inUserId := strconv.Itoa(update.Message.From.ID)
 		b.updates.AddMessage(NewIncomingChatMessage(inMsgId, update.Message.Text, inUserId, update.Message.From.UserName))
