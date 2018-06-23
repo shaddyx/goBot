@@ -91,11 +91,7 @@ func (b TelegramBot) Send(message OutgoingChatMessage) error {
 	return nil
 }
 
-func (b TelegramBot) SendAnswer(message OutgoingChatMessage, incomingMessage *IncomingChatMessage) error {
-	if incomingMessage == nil {
-		panic("incomingMessage is nil")
-	}
-
+func (b TelegramBot) SendAnswer(message OutgoingChatMessage, incomingMessage IncomingChatMessage) error {
 	if message.To == "" {
 		message.To = incomingMessage.From
 	}
