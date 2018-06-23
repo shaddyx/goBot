@@ -85,3 +85,11 @@ func TestRouter_SetDefaultHandler(t *testing.T) {
 		t.Errorf("Called only " + strconv.Itoa(called) + " times")
 	}
 }
+
+func TestRouter_Listen(t *testing.T) {
+	tgBot := TelegramBot{}
+	router := Router{}
+
+	go router.ListenUpdates(tgBot)
+
+}

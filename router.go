@@ -4,41 +4,48 @@ import "regexp"
 
 type RouterHandlerFunc func(msg IncomingChatMessage) *OutgoingChatMessage
 
+type handlerWrapper struct {
+	handler RouterHandlerFunc
+}
+
 type Router struct {
 	handlers       map[string]RouterHandlerFunc
 	regexHandlers  map[string]RouterHandlerFunc
-	defaultHandler RouterHandlerFunc
+	defaultHandler *handlerWrapper
 }
 
 func NewRouter() Router {
 	return Router{
 		handlers:      make(map[string]RouterHandlerFunc),
 		regexHandlers: make(map[string]RouterHandlerFunc),
+		defaultHandler: &handlerWrapper{
+			handler: nil,
+		},
 	}
 }
 
-func (r *Router) AddHandler(cmd string, f RouterHandlerFunc) {
+func (r Router) AddHandler(cmd string, f RouterHandlerFunc) {
 	if r.handlers[cmd] != nil {
 		panic("Handler already exists:" + cmd)
 	}
 	r.handlers[cmd] = f
 }
 
-func (r *Router) AddRegexHandler(cmd string, f RouterHandlerFunc) {
+func (r Router) AddRegexHandler(cmd string, f RouterHandlerFunc) {
 	if r.regexHandlers[cmd] != nil {
 		panic("Handler already exists:" + cmd)
 	}
 	r.regexHandlers[cmd] = f
 }
 
-func (r *Router) SetDefaultHandler(f RouterHandlerFunc) {
-	if r.defaultHandler != nil {
+func (r Router) SetDefaultHandler(f RouterHandlerFunc) {
+	if r.defaultHandler.handler != nil {
 		panic("Default handler already exists")
 	}
-	r.defaultHandler = f
+	r.defaultHandler.handler = f
 }
 
-func (r *Router) CallHandler(msg IncomingChatMessage) *OutgoingChatMessage {
+func (r Router) CallHandler(msg IncomingChatMessage) *OutgoingChatMessage {
 	if r.handlers[msg.Text] != nil {
 		return r.handlers[msg.Text](msg)
 	} else {
@@ -50,20 +57,20 @@ func (r *Router) CallHandler(msg IncomingChatMessage) *OutgoingChatMessage {
 		}
 	}
 	if r.defaultHandler != nil {
-		return r.defaultHandler(msg)
+		return r.defaultHandler.handler(msg)
 	}
 	return nil
 }
 
-func (r *Router) RmHandler(cmd string) {
+func (r Router) RmHandler(cmd string) {
 	delete(r.handlers, cmd)
 }
 
-func (r *Router) RmRegexHandler(cmd string) {
+func (r Router) RmRegexHandler(cmd string) {
 	delete(r.regexHandlers, cmd)
 }
 
-func (r *Router) ListenUpdates(bot BotInterface) {
+func (r Router) ListenUpdates(bot BotInterface) {
 	for msg := range bot.GetUpdates().Messages {
 		res := r.CallHandler(msg)
 		if res != nil {

@@ -47,7 +47,7 @@ func NewSessionStorage() *SessionStorage {
 	return storage
 }
 
-func (s *SessionStorage) get(user string) *SessionEntity {
+func (s SessionStorage) get(user string) *SessionEntity {
 	if !s.started {
 		panic("session storage is not started yet")
 	}
@@ -62,7 +62,7 @@ func (s *SessionStorage) get(user string) *SessionEntity {
 	s.mutex.Unlock()
 	return s.sessionMap[user]
 }
-func (s *SessionStorage) cleanUser(user string) {
+func (s SessionStorage) cleanUser(user string) {
 	s.mutex.Lock()
 	if s.sessionMap[user].updated+s.defaultTtl > makeTimestamp() {
 		delete(s.sessionMap, user)
@@ -70,7 +70,7 @@ func (s *SessionStorage) cleanUser(user string) {
 	s.mutex.Unlock()
 }
 
-func (s *SessionStorage) gc() {
+func (s SessionStorage) gc() {
 	for k := range s.sessionMap {
 		s.cleanUser(k)
 	}

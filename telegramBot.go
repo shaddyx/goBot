@@ -11,11 +11,10 @@ import (
 
 type TelegramBot struct {
 	AbstractBot
-	BotInterface
 	nativeBot *tgbotapi.BotAPI
 }
 
-func (b *TelegramBot) Connect() error {
+func (b TelegramBot) Connect() error {
 	log.Println(b.Token)
 	b.updates = NewUpdatesUterator()
 	log.Println("Initializing native telegram bot api")
@@ -37,11 +36,11 @@ func (b *TelegramBot) Connect() error {
 	return nil
 }
 
-func (b *TelegramBot) getTelegramId(message OutgoingChatMessage) (int64, error) {
+func (b TelegramBot) getTelegramId(message OutgoingChatMessage) (int64, error) {
 	return strconv.ParseInt(message.To, 10, 0)
 }
 
-func (b *TelegramBot) createReplyMarkup(buttons *[]KeyboardRow) *tgbotapi.ReplyKeyboardMarkup {
+func (b TelegramBot) createReplyMarkup(buttons *[]KeyboardRow) *tgbotapi.ReplyKeyboardMarkup {
 	rows := [][]tgbotapi.KeyboardButton{}
 
 	for _, sourceButtonRow := range *buttons {
@@ -56,7 +55,7 @@ func (b *TelegramBot) createReplyMarkup(buttons *[]KeyboardRow) *tgbotapi.ReplyK
 	}
 }
 
-func (b *TelegramBot) Send(message OutgoingChatMessage) error {
+func (b TelegramBot) Send(message OutgoingChatMessage) error {
 	if message.To == "" {
 		return errors.New("Error, message has no TO field:" + message.To)
 	}
@@ -91,7 +90,7 @@ func (b *TelegramBot) Send(message OutgoingChatMessage) error {
 	return nil
 }
 
-func (b *TelegramBot) SendAnswer(message OutgoingChatMessage, incomingMessage *IncomingChatMessage) error {
+func (b TelegramBot) SendAnswer(message OutgoingChatMessage, incomingMessage *IncomingChatMessage) error {
 	if incomingMessage == nil {
 		panic("incomingMessage is nil")
 	}
@@ -104,7 +103,7 @@ func (b *TelegramBot) SendAnswer(message OutgoingChatMessage, incomingMessage *I
 	return nil
 }
 
-func (b *TelegramBot) processUpdates() error {
+func (b TelegramBot) processUpdates() error {
 	u := tgbotapi.NewUpdate(0)
 	u.Timeout = 60
 
