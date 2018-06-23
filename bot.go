@@ -1,4 +1,4 @@
-package botframework
+package gobot
 
 import "reflect"
 
