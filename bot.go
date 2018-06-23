@@ -10,7 +10,7 @@ type AbstractBot struct {
 type BotInterface interface {
 	Connect() error
 	Send(msg OutgoingChatMessage) error
-	SendAnswer(msg OutgoingChatMessage, message IncomingChatMessage) error
+	SendAnswer(msg OutgoingChatMessage, message *IncomingChatMessage) error
 	GetUpdates() *UpdatesIterator
 	Disconnect() error
 }

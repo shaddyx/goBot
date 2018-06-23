@@ -67,7 +67,7 @@ func (r *Router) ListenUpdates(bot BotInterface) {
 	for msg := range bot.GetUpdates().Messages {
 		res := r.CallHandler(msg)
 		if res != nil {
-			bot.SendAnswer(*res, msg)
+			bot.SendAnswer(*res, &msg)
 		}
 	}
 }

@@ -11,6 +11,7 @@ import (
 
 type TelegramBot struct {
 	AbstractBot
+	BotInterface
 	nativeBot *tgbotapi.BotAPI
 }
 
