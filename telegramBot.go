@@ -15,8 +15,8 @@ type TelegramBot struct {
 }
 
 func (b TelegramBot) Connect() error {
+	b.updates = make(chan IncomingChatMessage, 1000)
 	log.Println(b.Token)
-	b.updates = NewUpdatesUterator()
 	log.Println("Initializing native telegram bot api")
 	bot, err := tgbotapi.NewBotAPI(b.Token)
 	if err != nil {
@@ -121,7 +121,7 @@ func (b TelegramBot) processUpdates() error {
 		log.Printf("Processing update [%s] %s", update.Message.From.UserName, update.Message.Text)
 		inMsgId := strconv.Itoa(update.Message.MessageID)
 		inUserId := strconv.Itoa(update.Message.From.ID)
-		b.updates.AddMessage(NewIncomingChatMessage(inMsgId, update.Message.Text, inUserId, update.Message.From.UserName))
+		b.GetUpdates() <- NewIncomingChatMessage(inMsgId, update.Message.Text, inUserId, update.Message.From.UserName)
 	}
 	return nil
 }

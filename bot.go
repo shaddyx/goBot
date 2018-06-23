@@ -5,22 +5,15 @@ import "reflect"
 type AbstractBot struct {
 	Token string
 	BotInterface
-	updates *UpdatesIterator
+	updates chan IncomingChatMessage
 }
 
 type BotInterface interface {
 	Connect() error
 	Send(message OutgoingChatMessage) error
 	SendAnswer(message OutgoingChatMessage, incomingMessage *IncomingChatMessage) error
-	GetUpdates() *UpdatesIterator
 	Disconnect() error
-}
-
-func (b AbstractBot) GetUpdates() *UpdatesIterator {
-	if b.updates == nil {
-		b.updates = NewUpdatesUterator()
-	}
-	return b.updates
+	GetUpdates() chan IncomingChatMessage
 }
 
 func (b AbstractBot) String() string {
@@ -29,4 +22,8 @@ func (b AbstractBot) String() string {
 
 func (b AbstractBot) Disconnect() error {
 	return nil
+}
+
+func (b AbstractBot) GetUpdates() chan IncomingChatMessage {
+	return b.updates
 }

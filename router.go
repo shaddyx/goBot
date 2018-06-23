@@ -9,16 +9,16 @@ type handlerWrapper struct {
 }
 
 type Router struct {
-	handlers       map[string]RouterHandlerFunc
-	regexHandlers  map[string]RouterHandlerFunc
-	defaultHandler *handlerWrapper
+	handlers              map[string]RouterHandlerFunc
+	regexHandlers         map[string]RouterHandlerFunc
+	defaultHandlerWrapper *handlerWrapper
 }
 
 func NewRouter() Router {
 	return Router{
 		handlers:      make(map[string]RouterHandlerFunc),
 		regexHandlers: make(map[string]RouterHandlerFunc),
-		defaultHandler: &handlerWrapper{
+		defaultHandlerWrapper: &handlerWrapper{
 			handler: nil,
 		},
 	}
@@ -39,10 +39,10 @@ func (r Router) AddRegexHandler(cmd string, f RouterHandlerFunc) {
 }
 
 func (r Router) SetDefaultHandler(f RouterHandlerFunc) {
-	if r.defaultHandler.handler != nil {
+	if r.defaultHandlerWrapper.handler != nil {
 		panic("Default handler already exists")
 	}
-	r.defaultHandler.handler = f
+	r.defaultHandlerWrapper.handler = f
 }
 
 func (r Router) CallHandler(msg IncomingChatMessage) *OutgoingChatMessage {
@@ -56,8 +56,8 @@ func (r Router) CallHandler(msg IncomingChatMessage) *OutgoingChatMessage {
 			}
 		}
 	}
-	if r.defaultHandler != nil {
-		return r.defaultHandler.handler(msg)
+	if r.defaultHandlerWrapper.handler != nil {
+		return r.defaultHandlerWrapper.handler(msg)
 	}
 	return nil
 }
@@ -71,7 +71,7 @@ func (r Router) RmRegexHandler(cmd string) {
 }
 
 func (r Router) ListenUpdates(bot BotInterface) {
-	for msg := range bot.GetUpdates().Messages {
+	for msg := range bot.GetUpdates() {
 		res := r.CallHandler(msg)
 		if res != nil {
 			bot.SendAnswer(*res, &msg)

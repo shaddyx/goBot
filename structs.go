@@ -41,22 +41,3 @@ func NewIncomingChatMessage(messageId string, text string, from string, fromUser
 		FromUserName: fromUserName,
 	}
 }
-
-type UpdatesIterator struct {
-	Messages chan IncomingChatMessage
-}
-
-func NewUpdatesUterator() *UpdatesIterator {
-	c := make(chan IncomingChatMessage, 10000)
-	return &UpdatesIterator{
-		Messages: c,
-	}
-}
-
-func (u *UpdatesIterator) AddMessage(msg IncomingChatMessage) {
-	u.Messages <- msg
-}
-
-func (u *UpdatesIterator) next() IncomingChatMessage {
-	return <-u.Messages
-}
