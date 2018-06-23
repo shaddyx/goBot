@@ -62,3 +62,9 @@ func (r *Router) RmHandler(cmd string) {
 func (r *Router) RmRegexHandler(cmd string) {
 	delete(r.regexHandlers, cmd)
 }
+
+func (r *Router) ListenUpdates(bot AbstractBot) {
+	for msg := range bot.GetUpdates().Messages {
+		r.CallHandler(msg)
+	}
+}
